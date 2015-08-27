@@ -26,6 +26,9 @@ Template.room.helpers
 	windowId: ->
 		return "chat-window-#{this._id}"
 
+	uploading: ->
+		return Session.get 'uploading'
+
 	usersTyping: ->
 		users = MsgTyping.get @_id
 		if users.length is 0
@@ -83,6 +86,10 @@ Template.room.helpers
 				phone: Session.get('user_' + username + '_phone')
 				username: String(username)
 			}
+
+			if Meteor.user()?.admin is true
+				userData = _.extend userData, Meteor.users.findOne { username: String(username) }
+
 			return userData
 
 	userStatus: ->
@@ -149,7 +156,7 @@ Template.room.helpers
 		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
 	canDirectMessage: ->
-		return Meteor.user().username isnt this.username
+		return Meteor.user()?.username isnt this.username
 
 	roomNameEdit: ->
 		return Session.get('roomData' + this._id)?.name
@@ -221,7 +228,7 @@ Template.room.helpers
 			userData = {
 				username: String(username)
 			}
-		
+
 		return userData
 
 	seeAll: ->
@@ -276,14 +283,14 @@ Template.room.helpers
 	utc: ->
 		if @utcOffset?
 			return "UTC #{@utcOffset}"
-	
+
 	phoneNumber: ->
 		return '' unless @phoneNumber
 		if @phoneNumber.length > 10
 			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,5)}-#{@phoneNumber.substr(7)}"
 		else
 			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,4)}-#{@phoneNumber.substr(6)}"
-	
+
 	lastLogin: ->
 		if @lastLogin
 			return moment(@lastLogin).format('LLL')
@@ -291,8 +298,29 @@ Template.room.helpers
 	canJoin: ->
 		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
 
+	canRecordAudio: ->
+		return navigator.getUserMedia? or navigator.webkitGetUserMedia?
+
 
 Template.room.events
+	"touchstart .message": (e, t) ->
+		message = this._arguments[1]
+		doLongTouch = ->
+			mobileMessageMenu.show(message, t)
+
+		t.touchtime = Meteor.setTimeout doLongTouch, 2000
+
+	"touchend .message": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+
+	"touchmove .message": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+
+	"touchcancel .message": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+
+	"click .upload-progress-item > a": ->
+		Session.set "uploading-cancel-#{this.id}", true
 
 	"click .flex-tab .more": (event) ->
 		if (Session.get('flexOpened'))
@@ -349,20 +377,15 @@ Template.room.events
 			return
 
 		items = e.originalEvent.clipboardData.items
+		files = []
 		for item in items
 			if item.kind is 'file' and item.type.indexOf('image/') isnt -1
 				e.preventDefault()
+				files.push
+					file: item.getAsFile()
+					name: 'Clipboard'
 
-				blob = item.getAsFile()
-
-				newFile = new (FS.File)(blob)
-				newFile.name('Clipboard')
-				newFile.rid = Session.get('openedRoom')
-				newFile.recId = Random.id()
-				newFile.userId = Meteor.userId()
-				Files.insert newFile, (error, fileObj) ->
-					unless error
-						toastr.success 'Upload from clipboard succeeded!'
+		fileUpload files
 
 	'keydown .input-message': (event) ->
 		Template.instance().chatMessages.keydown(@_id, event, Template.instance())
@@ -370,6 +393,10 @@ Template.room.events
 	'click .message-form .icon-paper-plane': (event) ->
 		input = $(event.currentTarget).siblings("textarea")
 		Template.instance().chatMessages.send(this._id, input.get(0))
+		event.preventDefault()
+		event.stopPropagation()
+		input.focus()
+		input.get(0).updateAutogrow()
 
 	'click .add-user': (event) ->
 		toggleAddUser()
@@ -419,7 +446,7 @@ Template.room.events
 				return Errors.throw error.reason
 
 			if result?.rid?
-				FlowRouter.go('room', { _id: result.rid })
+				FlowRouter.go('direct', { username: Session.get('showUserInfo') })
 
 	'click button.load-more': (e) ->
 		RoomHistoryManager.getMore @_id
@@ -433,7 +460,6 @@ Template.room.events
 					return Errors.throw error.reason
 
 				if result?.rid?
-					# FlowRouter.go('room', { _id: result.rid })
 					$('#user-add-search').val('')
 		else if roomData.t in ['c', 'p']
 			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
@@ -445,15 +471,19 @@ Template.room.events
 
 	'autocompleteselect #room-search': (event, template, doc) ->
 		if doc.type is 'u'
-			Meteor.call 'createDirectMessage', doc.uid, (error, result) ->
+			Meteor.call 'createDirectMessage', doc.username, (error, result) ->
 				if error
 					return Errors.throw error.reason
 
 				if result?.rid?
-					FlowRouter.go('room', { _id: result.rid })
+					FlowRouter.go('direct', { username: doc.username })
 					$('#room-search').val('')
-		else
-			FlowRouter.go('room', { _id: doc.rid })
+		else if doc.type is 'r'
+			if doc.t is 'c'
+				FlowRouter.go('channel', { name: doc.name })
+			else if doc.t is 'p'
+				FlowRouter.go('group', { name: doc.name })
+
 			$('#room-search').val('')
 
 	# 'scroll .wrapper': (e, instance) ->
@@ -471,24 +501,31 @@ Template.room.events
 	'click .see-all': (e, instance) ->
 		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
-	"mousedown .edit-message": (e) ->
+	"click .edit-message": (e) ->
 		Template.instance().chatMessages.edit(e.currentTarget.parentNode.parentNode)
-		# Session.set 'editingMessageId', undefined
-		# Meteor.defer ->
-		# 	Session.set 'editingMessageId', self._id
-		# 	Meteor.defer ->
-		# 		$('.input-message-editing').select()
+		input = Template.instance().find('.input-message')
+		Meteor.setTimeout ->
+			input.focus()
+		, 200
+
+	"click .editing-commands-cancel > a": (e) ->
+		Template.instance().chatMessages.clearEditing()
+
+	"click .editing-commands-save > a": (e) ->
+		chatMessages = Template.instance().chatMessages
+		chatMessages.send(@_id, chatMessages.input)
 
 	"click .mention-link": (e) ->
 		channel = $(e.currentTarget).data('channel')
 		if channel?
-			channelObj = ChatSubscription.findOne name: channel
-			if channelObj?
-				FlowRouter.go 'room', {_id: channelObj.rid}
+			FlowRouter.go 'channel', {name: channel}
 			return
 
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+
+	'click .image-to-download': (event) ->
+		ChatMessage.update {_id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url')}, {$set: {'urls.$.downloadImages': true}}
 
 	'click .delete-message': (event) ->
 		message = @_arguments[1]
@@ -506,14 +543,22 @@ Template.room.events
 			closeOnConfirm: false
 			html: false
 		}, ->
-			swal 
+			swal
 				title: t('Deleted')
 				text: t('Your_entry_has_been_deleted')
 				type: 'success'
 				timer: 1000
-				showConfirmButton: false 
+				showConfirmButton: false
 
 			instance.chatMessages.deleteMsg(message)
+	'click .pin-message': (event) ->
+		message = @_arguments[1]
+		instance = Template.instance()
+
+		if message.pinned
+			instance.chatMessages.unpinMsg(message)
+		else
+			instance.chatMessages.pinMsg(message)
 
 	'click .start-video': (event) ->
 		_id = Template.instance().data._id
@@ -544,17 +589,51 @@ Template.room.events
 	'dragleave .dropzone-overlay': (e) ->
 		e.currentTarget.parentNode.classList.remove 'over'
 
-	'dropped .dropzone-overlay': (e) ->
-		e.currentTarget.parentNode.classList.remove 'over'
+	'dropped .dropzone-overlay': (event) ->
+		event.currentTarget.parentNode.classList.remove 'over'
 
-		FS?.Utility?.eachFile e, (file) ->
-			newFile = new (FS.File)(file)
-			newFile.rid = Session.get('openedRoom')
-			newFile.recId = Random.id()
-			newFile.userId = Meteor.userId()
-			Files.insert newFile, (error, fileObj) ->
-				unless error
-					toastr.success 'Upload succeeded!'
+		e = event.originalEvent or event
+		files = e.target.files
+		if not files or files.length is 0
+			files = e.dataTransfer?.files or []
+
+		filesToUpload = []
+		for file in files
+			filesToUpload.push
+				file: file
+				name: file.name
+
+		fileUpload filesToUpload
+
+	'change .message-form input[type=file]': (event, template) ->
+		e = event.originalEvent or event
+		files = e.target.files
+		if not files or files.length is 0
+			files = e.dataTransfer?.files or []
+
+		filesToUpload = []
+		for file in files
+			filesToUpload.push
+				file: file
+				name: file.name
+
+		fileUpload filesToUpload
+
+	'click .message-form .mic': (e, t) ->
+		AudioRecorder.start ->
+			t.$('.stop-mic').removeClass('hidden')
+			t.$('.mic').addClass('hidden')
+
+	'click .message-form .stop-mic': (e, t) ->
+		AudioRecorder.stop (blob) ->
+			fileUpload [{
+				file: blob
+				type: 'audio'
+				name: 'Audio record'
+			}]
+
+		t.$('.stop-mic').addClass('hidden')
+		t.$('.mic').removeClass('hidden')
 
 	'click .deactivate': ->
 		username = Session.get('showUserInfo')
@@ -564,7 +643,7 @@ Template.room.events
 				toastr.success t('User_has_been_deactivated')
 			if error
 				toastr.error error.reason
-	
+
 	'click .activate': ->
 		username = Session.get('showUserInfo')
 		user = Meteor.users.findOne { username: String(username) }
@@ -639,17 +718,35 @@ Template.room.onRendered ->
 	RoomHistoryManager.getMoreIfIsEmpty this.data._id
 
 renameRoom = (rid, name) ->
+	name = name?.toLowerCase().trim()
 	console.log 'room renameRoom' if window.rocketDebug
-	if Session.get('roomData' + rid).name == name
+	room = Session.get('roomData' + rid)
+	if room.name is name
 		Session.set('editRoomTitle', false)
 		return false
 
 	Meteor.call 'saveRoomName', rid, name, (error, result) ->
 		if result
 			Session.set('editRoomTitle', false)
+			# If room was renamed then close current room and send user to the new one
+			RoomManager.close room.t + room.name
+			switch room.t
+				when 'c'
+					FlowRouter.go 'channel', name: name
+				when 'p'
+					FlowRouter.go 'group', name: name
 
 			toastr.success t('Room_name_changed_successfully')
 		if error
+			if error.error is 'name-invalid'
+				toastr.error t('Invalid_room_name', name)
+				return
+			if error.error is 'duplicate-name'
+				if room.t is 'c'
+					toastr.error t('Duplicate_channel_name', name)
+				else
+					toastr.error t('Duplicate_private_group_name', name)
+				return
 			toastr.error error.reason
 
 toggleAddUser = ->

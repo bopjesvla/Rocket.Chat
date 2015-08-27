@@ -1,13 +1,21 @@
 Template.body.onRendered ->
+	$(document.body).on 'keydown', (e) ->
+		if e.keyCode is 80 and (e.ctrlKey is true or e.metaKey is true)
+			e.preventDefault()
+			e.stopPropagation()
+			spotlight.show()
 
-	dataLayerComputation = Tracker.autorun ->
+		if e.keyCode is 27
+			spotlight.hide()
+
+	Tracker.autorun (c) ->
 		w = window
 		d = document
 		s = 'script'
 		l = 'dataLayer'
 		i = RocketChat.settings.get 'API_Analytics'
 		if Match.test(i, String) and i.trim() isnt ''
-			dataLayerComputation?.stop()
+			c.stop()
 			do (w,d,s,l,i) ->
 				w[l] = w[l] || []
 				w[l].push {'gtm.start': new Date().getTime(), event:'gtm.js'}
@@ -18,55 +26,63 @@ Template.body.onRendered ->
 				j.src = '//www.googletagmanager.com/gtm.js?id=' + i + dl
 				f.parentNode.insertBefore j, f
 
-	metaLanguageComputation = Tracker.autorun ->
-		if RocketChat.settings.get 'Meta:language'
-			metaLanguageComputation?.stop()
+	Tracker.autorun (c) ->
+		if RocketChat.settings.get 'Meta_language'
+			c.stop()
+
 			Meta.set
 				name: 'http-equiv'
 				property: 'content-language'
-				content: RocketChat.settings.get 'Meta:language'
+				content: RocketChat.settings.get 'Meta_language'
 			Meta.set
 				name: 'name'
 				property: 'language'
-				content: RocketChat.settings.get 'Meta:language'
+				content: RocketChat.settings.get 'Meta_language'
 
-	metaFBComputation = Tracker.autorun ->
-		if RocketChat.settings.get 'Meta:fb:app_id'
-			metaFBComputation?.stop()
+	Tracker.autorun (c) ->
+		if RocketChat.settings.get 'Meta_fb_app_id'
+			c.stop()
+
 			Meta.set
 				name: 'property'
 				property: 'fb:app_id'
-				content: RocketChat.settings.get 'Meta:fb:app_id'
+				content: RocketChat.settings.get 'Meta_fb_app_id'
 
-	metaRobotsComputation = Tracker.autorun ->
-		if RocketChat.settings.get 'Meta:robots'
-			metaRobotsComputation?.stop()
+	Tracker.autorun (c) ->
+		if RocketChat.settings.get 'Meta_robots'
+			c.stop()
+
 			Meta.set
 				name: 'name'
 				property: 'robots'
-				content: RocketChat.settings.get 'Meta:robots'
+				content: RocketChat.settings.get 'Meta_robots'
 
-	metaGoogleComputation = Tracker.autorun ->
-		if RocketChat.settings.get 'Meta:google-site-verification'
-			metaGoogleComputation?.stop()
+	Tracker.autorun (c) ->
+		if RocketChat.settings.get 'Meta_google-site-verification'
+			c.stop()
+
 			Meta.set
 				name: 'name'
 				property: 'google-site-verification'
-				content: RocketChat.settings.get 'Meta:google-site-verification'
+				content: RocketChat.settings.get 'Meta_google-site-verification'
 
-	metaMSValidateComputation = Tracker.autorun ->
-		if RocketChat.settings.get 'Meta:msvalidate.01'
-			metaMSValidateComputation?.stop()
+	Tracker.autorun (c) ->
+		if RocketChat.settings.get 'Meta_msvalidate01'
+			c.stop()
+
 			Meta.set
 				name: 'name'
 				property: 'msvalidate.01'
-				content: RocketChat.settings.get 'Meta:msvalidate.01'
+				content: RocketChat.settings.get 'Meta_msvalidate01'
 
 	if Meteor.isCordova
 		$(document.body).addClass 'is-cordova'
 
 
 Template.main.helpers
+
+	siteName: ->
+		return RocketChat.settings.get 'Site_Name'
 
 	logged: ->
 		if Meteor.userId()?
@@ -109,10 +125,12 @@ Template.main.events
 		t.touchstartX = undefined
 		t.touchstartY = undefined
 		t.movestarted = false
+		t.blockmove = false
 		if $(e.currentTarget).closest('.main-content').length > 0
 			t.touchstartX = e.originalEvent.touches[0].clientX
 			t.touchstartY = e.originalEvent.touches[0].clientY
 			t.mainContent = $('.main-content')
+			t.wrapper = $('.messages-box > .wrapper')
 
 	'touchmove': (e, t) ->
 		if t.touchstartX?
@@ -122,7 +140,10 @@ Template.main.events
 			absX = Math.abs(diffX)
 			absY = Math.abs(diffY)
 
-			if t.movestarted is true or (absX > 20 and absY < 20)
+			if t.movestarted isnt true and t.blockmove isnt true and absY > 5
+				t.blockmove = true
+
+			if t.blockmove isnt true and (t.movestarted is true or absX > 5)
 				t.movestarted = true
 
 				if menu.isOpen()
@@ -137,13 +158,13 @@ Template.main.events
 
 				t.mainContent.addClass('notransition')
 				t.mainContent.css('transform', 'translate('+t.left+'px)')
+				t.wrapper.css('overflow', 'hidden')
 
 	'touchend': (e, t) ->
-		t.touchstartX = undefined
-
 		if t.movestarted is true
 			t.mainContent.removeClass('notransition')
 			t.mainContent.css('transform', '');
+			t.wrapper.css('overflow', '')
 
 			if menu.isOpen()
 				if t.left >= 200

@@ -23,6 +23,7 @@ Template.message.helpers
 			when 'nu' then t('User_added', { user_added: this.u.username })
 			when 'uj' then t('User_joined_channel', { user: this.u.username })
 			when 'wm' then t('Welcome', { user: this.u.username })
+			when 'rm' then t('Message_removed', { user: this.u.username })
 			when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
 				this.html = this.msg
@@ -33,8 +34,19 @@ Template.message.helpers
 				return this.html
 
 	system: ->
-		return if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj'] then "system" else "human"
-
+		return if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm'] then "system" else "human"
+	edited: ->
+		return @ets and @t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+	pinned: ->
+		return this.pinned
+	canEdit: ->
+		return RocketChat.settings.get 'Message_AllowEditing'
+	canDelete: ->
+		return RocketChat.settings.get 'Message_AllowDeleting'
+	canPin: ->
+		return RocketChat.settings.get 'Message_AllowPinning'
+	showEditedStatus: ->
+		return RocketChat.settings.get 'Message_ShowEditedStatus'
 
 Template.message.onViewRendered = (context) ->
 	view = this
@@ -48,7 +60,7 @@ Template.message.onViewRendered = (context) ->
 		ul = lastNode.parentElement
 		wrapper = ul.parentElement
 
-		if context.urls?.length > 0 and Template.oembedBaseWidget?
+		if context.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
 			for item in context.urls
 				do (item) ->
 					urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')

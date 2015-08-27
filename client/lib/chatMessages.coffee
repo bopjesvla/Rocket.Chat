@@ -41,7 +41,7 @@ class @ChatMessages
 		return -1
 
 	edit: (element, index) ->
-		return
+		return unless RocketChat.settings.get 'Message_AllowEditing'
 		return if element.classList.contains("system")
 		this.clearEditing()
 		id = element.getAttribute("id")
@@ -52,6 +52,7 @@ class @ChatMessages
 		this.editing.id = id
 		element.classList.add("editing")
 		this.input.classList.add("editing")
+		$(this.input).closest('.message-form').addClass('editing');
 		setTimeout =>
 			this.input.focus()
 		, 5
@@ -60,6 +61,7 @@ class @ChatMessages
 		if this.editing.element
 			this.editing.element.classList.remove("editing")
 			this.input.classList.remove("editing")
+			$(this.input).closest('.message-form').removeClass('editing');
 			this.editing.id = null
 			this.editing.element = null
 			this.editing.index = null
@@ -69,6 +71,10 @@ class @ChatMessages
 
 	send: (rid, input) ->
 		if _.trim(input.value) isnt ''
+			if this.editing.id
+				this.update(this.editing.id, rid, input)
+				return
+
 			if this.isMessageTooLong(input)
 				return Errors.throw t('Error_message_too_long')
 			KonchatNotification.removeRoomNotification(rid)
@@ -94,10 +100,22 @@ class @ChatMessages
 			if error
 				return Errors.throw error.reason
 
+	pinMsg: (message) ->
+		message.pinned = true
+		Meteor.call 'pinMessage', message, (error, result) ->
+			if error
+				return Errors.throw error.reason
+
+	unpinMsg: (message) ->
+		message.pinned = false
+		Meteor.call 'unpinMessage', message, (error, result) ->
+			if error
+				return Errors.throw error.reason
+
 	update: (id, rid, input) ->
 		if _.trim(input.value) isnt ''
 			msg = input.value
-			Meteor.call 'updateMessage', { id: id, msg: msg }
+			Meteor.call 'updateMessage', { _id: id, msg: msg, rid: rid }
 			this.clearEditing()
 			this.stopTyping(rid)
 
@@ -162,10 +180,7 @@ class @ChatMessages
 		if k is 13 and not event.shiftKey
 			event.preventDefault()
 			event.stopPropagation()
-			if this.editing.id
-				this.update(this.editing.id, rid, input)
-			else
-				this.send(rid, input)
+			this.send(rid, input)
 			return
 
 		if k is 9

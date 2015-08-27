@@ -1,6 +1,9 @@
 <template name="userStatus">
 	<div class="account-box">
-		<a href="" id="settings"><i class="icon-sliders" title={{_ "My_Account"}}></i></a>
-		<a href="" id="logout"><i class="icon-logout" title={{_ "Logout"}}></i><span></span></a>
+		<a href="" id="account" class='account-link'><i class="icon-sliders"></i></a>
+		{{#if isAdmin}}
+			<a href="" id="admin" class='account-link'><i class="icon-wrench"></i></a>
+		{{/if}}
+		<a href="" id="logout"><i class="icon-logout"></i></a>
 	</div>
 </template>

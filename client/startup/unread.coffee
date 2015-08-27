@@ -15,8 +15,8 @@ Meteor.startup ->
 		subscriptions = ChatSubscription.find({open: true}, { fields: { unread: 1, alert: 1, rid: 1 } })
 
 		rid = undefined
-		if FlowRouter.getRouteName() is 'room'
-			rid = FlowRouter.getParam '_id'
+		if FlowRouter.getRouteName() in ['channel', 'group', 'direct']
+			rid = Session.get 'openedRoom'
 
 		for subscription in subscriptions.fetch()
 			if subscription.rid is rid and (subscription.alert or subscription.unread > 0) and document.hasFocus()
@@ -43,8 +43,9 @@ Meteor.startup ->
 		animation: 'none'
 
 	Tracker.autorun ->
-
+		siteName = RocketChat.settings.get 'Site_Name'
+		
 		unread = Session.get 'unread'
 		fireGlobalEvent 'unread-changed', unread
 		favico?.badge unread, bgColor: if typeof unread isnt 'number' then '#3d8a3a' else '#ac1b1b'
-		document.title = if unread == '' then 'Chat Mafia' else '(' + unread + ') Chat Mafia'
+		document.title = if unread == '' then siteName else '(' + unread + ') '+ siteName
