@@ -32,6 +32,8 @@ Template.chatRoomItem.helpers
 		roomData = Session.get('roomData' + this.rid)
 
 		return false unless roomData
+		
+		return true;
 
 		if (roomData.cl? and not roomData.cl) or roomData.t is 'd' or (roomData.usernames?.indexOf(Meteor.user().username) isnt -1 and roomData.usernames?.length is 1)
 			return false

@@ -2,6 +2,9 @@ Meteor.methods
 	setAvatarFromService: (dataURI, contentType, service) ->
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] setAvatarFromService -> Invalid user")
+			
+		if dataURI.length > 15000
+			throw new Meteor.Error('max-size-exceeded', "[methods] setAvatarFromService -> Too big")
 
 		console.log '[methods] setAvatarFromService -> '.green, 'userId:', Meteor.userId(), 'contentType:', contentType, 'service:', service
 

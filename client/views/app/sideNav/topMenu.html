@@ -1,0 +1,22 @@
+<template name="topMenu">
+	<div class="account-box">
+		{{#with myUserInfo}}
+			<div class="info status-{{status}}">
+				{{#if username}}
+					<div class="thumb" data-status='{{visualStatus}}'>
+						{{> avatar username=username}}
+					</div>
+					<div class="data">
+						<h4>{{username}}</h4>
+					</div>
+				{{/if}}
+			</div>
+			<nav class="options _hidden">
+				<div class="wrapper">
+					<a href="" id="settings"><i class="icon-sliders"></i><span>{{_ "My_Account"}}</span></a>
+					<a href="" id="logout"><i class="icon-logout"></i><span>{{_ "Logout"}}</span></a>
+				</div>
+			</nav>
+		{{/with}}
+	</div>
+</template>

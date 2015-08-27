@@ -10,6 +10,9 @@ Meteor.methods
 
 		now = new Date()
 		user = Meteor.user()
+		
+		if not Array.isArray(members)
+			members = []
 
 		members.push user.username
 

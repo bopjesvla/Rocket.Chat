@@ -36,6 +36,8 @@ Template.avatarPrompt.events
 			Meteor.call 'resetAvatar'
 			updateAvatarOfUsername Meteor.user().username
 			toastr.success t('Avatar_changed_successfully')
+		else if @blob.length > 17000
+			toastr.error t("Maximum size of 12kb exceeded.")
 		else
 			Meteor.call 'setAvatarFromService', @blob, @contentType, @service, ->
 				updateAvatarOfUsername Meteor.user().username

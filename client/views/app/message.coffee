@@ -33,28 +33,17 @@ Template.message.helpers
 				return this.html
 
 	system: ->
-		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
+		return if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj'] then "system" else "human"
 
 
 Template.message.onViewRendered = (context) ->
 	view = this
 	this._domrange.onAttached (domRange) ->
 		lastNode = domRange.lastNode()
-		if lastNode.previousElementSibling?.dataset?.date isnt lastNode.dataset.date
-			$(lastNode).addClass('new-day')
-			$(lastNode).removeClass('sequential')
-		else if lastNode.previousElementSibling?.dataset?.username isnt lastNode.dataset.username
-			$(lastNode).removeClass('sequential')
-
 		if lastNode.nextElementSibling?.dataset?.date is lastNode.dataset.date
 			$(lastNode.nextElementSibling).removeClass('new-day')
-			$(lastNode.nextElementSibling).addClass('sequential')
 		else
 			$(lastNode.nextElementSibling).addClass('new-day')
-			$(lastNode.nextElementSibling).removeClass('sequential')
-
-		if lastNode.nextElementSibling?.dataset?.username isnt lastNode.dataset.username
-			$(lastNode.nextElementSibling).removeClass('sequential')
 
 		ul = lastNode.parentElement
 		wrapper = ul.parentElement

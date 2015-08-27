@@ -2,14 +2,14 @@ Meteor.startup ->
 	Meteor.defer ->
 
 
-		if not ChatRoom.findOne('name': 'general')?
+		if not ChatRoom.findOne('name': 'lobby')?
 			ChatRoom.insert
-				_id: 'GENERAL'
+				_id: 'lobby'
 				default: true
 				usernames: []
 				ts: new Date()
 				t: 'c'
-				name: 'general'
+				name: 'lobby'
 				msgs: 0
 
 		if process.env.ADMIN_EMAIL? and process.env.ADMIN_PASS? 

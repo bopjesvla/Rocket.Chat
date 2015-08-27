@@ -374,7 +374,7 @@ input[type='password'] {
 	line-height: normal;
 	border: 1px solid #E7E7E7;
 	background-color: #fff;
-	border-radius: 5px;
+	border-radius: 3px;
 	padding: 2px 8px;
 	position: relative;
 	width: 100%;
@@ -926,10 +926,10 @@ a.github-fork {
 }
 
 .account-box {
-	position: relative;
-	height: 100%;
-	cursor: pointer;
+	margin-top: 12px;
 	width: 100%;
+	text-align: center;
+	
 	.info {
 		position: relative;
 		height: 100%;
@@ -1003,6 +1003,16 @@ a.github-fork {
 				border-color: darken(@status-busy, 5%);
 				background-color: @status-busy;
 			}
+		}
+	}
+	a {
+		color: rgba(255, 255, 255, 0.5);
+		line-height: 1;
+		text-decoration: none;
+		&:hover {
+			background-color: darken(@primary-background-color, 2%);
+			color: rgba(255, 255, 255, 0.75);
+			text-decoration: none;
 		}
 	}
 	.options {
@@ -1132,7 +1142,7 @@ a.github-fork {
 	top: 0;
 	left: 0;
 	height: 100%;
-	z-index: 1000;
+	z-index: 110;
 	overflow-y: auto;
 	overflow-x: hidden;
 	width: @rooms-box-width;
@@ -1206,7 +1216,7 @@ a.github-fork {
 		left: 0;
 		width: 100%;
 		padding: 0 10px;
-		z-index: 120;
+		z-index: 1000;
 		text-align: left;
 		background: #fff;
 		min-height: @footer-min-height;
@@ -1401,7 +1411,7 @@ a.github-fork {
 		bottom: 0;
 		left: 0;
 		width: 100%;
-		padding: 10px 15px 0px 15px;
+		padding: 5px 5px 0px 5px;
 		z-index: 120;
 		text-align: right;
 		background: #fff;
@@ -1897,7 +1907,7 @@ a.github-fork {
 	}
 	.footer {
 		position: absolute;
-		padding: 10px 20px 0px 20px;
+		padding: 7px 7px 0px 7px;
 		background: #FCFCFC;
 		border-top: 1px solid @tertiary-background-color;
 		z-index: 100;
@@ -2067,45 +2077,17 @@ a.github-fork {
 	}
 	.message {
 		font-size: 14px;
-		padding-left: 50px;
+		padding-left: 5px;
 		position: relative;
+		display: table-row;
 		line-height: 20px;
-		margin: 12px 20px 5px;
-		margin-top: 12px;
+		margin: 0 10px;
 		min-height: 40px;
 		&:nth-child(1) {
 			margin-top: 0;
 		}
 		&.new-day {
 			margin-top: 60px;
-		}
-		&.new-day {
-			&:before {
-				content: attr(data-date);
-				display: block;
-				position: absolute;
-				top: -30px;
-				left: 0;
-				font-size: 12px;
-				font-weight: 600;
-				text-align: center;
-				.calc(left,
-				~"50% - 70px");
-				color: @secondary-font-color;
-				z-index: 10;
-				padding: 0 10px;
-				background-color: #FFF;
-				min-width: 140px;
-			}
-			&:after {
-				content: " ";
-				display: block;
-				position: absolute;
-				top: -20px;
-				left: 0;
-				width: 100%;
-				border-top: 1px solid #ddd;
-			}
 		}
 		.edit-message {
 			display: none;
@@ -2122,7 +2104,9 @@ a.github-fork {
 			display: inline-block;
 		}
 		.user {
-			display: inline-block;
+			display: table-cell;
+			text-align: right;
+			padding-right: 10px;
 			font-weight: 600;
 			color: #444444;
 			margin-right: 5px;
@@ -2130,17 +2114,29 @@ a.github-fork {
 				color: #333;
 			}
 		}
-		.thumb {
-			position: absolute;
-			left: 0;
-			top: 0;
-			display: block;
-			width: 40px;
-			height: 40px;
+		.avatar {
+			display: inline-block;
+			position: relative;
+			top: 5px;
+			width: 20px;
+			height: 20px;
+			border-radius: 0;
+			background-color: #ddd;
+			margin-right: 4px;
+			
+			.avatar-image {
+				border-radius: 0;
+			}
 		}
 		.info {
 			font-size: 12px;
 			color: @info-font-color;
+			display: table-cell;
+			padding-left: 7px;
+			padding-right: 25px;
+		}
+		blockquote {
+			display: inline-block;
 		}
 		&.sequential {
 			margin-top: 5px;
@@ -2179,11 +2175,21 @@ a.github-fork {
 				}
 			}
 		}
+		.body {
+			display: table-cell;
+		}
+		&.human {
+			.body {
+				padding-left: 10px;
+				border-left: 1px solid #eaeaea;
+			}
+		}
 		&.system {
 			.body {
 				color: @info-font-color;
 				font-style: italic;
 				text-transform: lowercase;
+				margin-left: -7px;
 				em {
 					font-weight: 600;
 				}

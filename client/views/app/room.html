@@ -50,6 +50,7 @@
 							<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message" placeholder="{{_ 'Message'}}"></textarea>
 							<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
 						</div>
+						{{!--
 						<div class="users-typing">
 							{{#with usersTyping}}
 								<strong>{{users}}</strong>
@@ -76,6 +77,7 @@
 							<code class="inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
 							<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
 						</div>
+						--}}
 					</form>
 				{{else}}
 					{{#if canJoin}}
@@ -223,9 +225,11 @@
 					{{/if}}
 				</div>
 			{{/if}}
+			{{!--
 			<footer>
 				{{> social}}
 			</footer>
+			--}}
 		</section>
 	</div>
 </template>

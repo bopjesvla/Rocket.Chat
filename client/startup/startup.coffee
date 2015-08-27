@@ -3,7 +3,7 @@ Meteor.startup ->
 	UserPresence.start()
 	Meteor.subscribe("activeUsers")
 
-	Session.setDefault('flexOpened', false)
+	Session.setDefault('flexOpened', true)
 	Session.setDefault('AvatarRandom', 0)
 
 	window.lastMessageWindow = {}

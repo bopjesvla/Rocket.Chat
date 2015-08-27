@@ -18,7 +18,7 @@ if FS?
 	@Files = new FS.Collection 'Files',
 		stores: [fileStore],
 		filter:
-			maxSize: 2097152,
+			maxSize: 12000,
 			allow:
 				contentTypes: ['image/*']
 			onInvalid: (message) ->

@@ -31,6 +31,7 @@ class @ChatMessages
 				this.clearEditing()
 
 	getEditingIndex: (element) ->
+		return
 		msgs = this.wrapper.get(0).querySelectorAll(".own:not(.system)")
 		index = 0
 		for msg in msgs
@@ -40,6 +41,7 @@ class @ChatMessages
 		return -1
 
 	edit: (element, index) ->
+		return
 		return if element.classList.contains("system")
 		this.clearEditing()
 		id = element.getAttribute("id")
@@ -87,6 +89,7 @@ class @ChatMessages
 				Meteor.call 'sendMessage', msgObject
 
 	deleteMsg: (message) ->
+		return
 		Meteor.call 'deleteMessage', message, (error, result) ->
 			if error
 				return Errors.throw error.reason
@@ -99,12 +102,14 @@ class @ChatMessages
 			this.stopTyping(rid)
 
 	startTyping: (rid, input) ->
+		return;
 		if _.trim(input.value) isnt ''
 			MsgTyping.start(rid)
 		else
 			MsgTyping.stop(rid)
 
 	stopTyping: (rid) ->
+		return;
 		MsgTyping.stop(rid)
 
 	bindEvents: ->

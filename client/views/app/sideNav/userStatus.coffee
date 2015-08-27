@@ -22,9 +22,6 @@ Template.userStatus.events
 		event.preventDefault()
 		AccountBox.setStatus(event.currentTarget.dataset.status)
 
-	'click .account-box': (event) ->
-		AccountBox.toggle()
-
 	'click #logout': (event) ->
 		event.preventDefault()
 		user = Meteor.user()

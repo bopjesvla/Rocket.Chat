@@ -6,5 +6,5 @@ Meteor.startup ->
 			# Set GENERAL room to be default
 			###
 
-			ChatRoom.update({_id: 'GENERAL'}, {$set: {default: true}})
-			console.log "Set GENERAL room to be default"
+			ChatRoom.update({_id: 'lobby'}, {$set: {default: true}})
+			console.log "Set #lobby to be default"
