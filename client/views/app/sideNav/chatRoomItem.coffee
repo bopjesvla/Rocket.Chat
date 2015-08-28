@@ -23,6 +23,7 @@ Template.chatRoomItem.helpers
 			when 'd' then return 'icon-at'
 			when 'c' then return 'icon-hash'
 			when 'p' then return 'icon-lock'
+			when 'g' then return 'icon-gamepad'
 
 	active: ->
 		if Session.get('openedRoom') is this.rid
@@ -48,6 +49,8 @@ Template.chatRoomItem.helpers
 				FlowRouter.path('group', {name: this.name})
 			when 'c'
 				FlowRouter.path('channel', {name: this.name})
+			when 'g'
+				FlowRouter.path('game', {name: this.name})
 
 Template.chatRoomItem.rendered = ->
 	if not (FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.data.rid) and not this.data.ls

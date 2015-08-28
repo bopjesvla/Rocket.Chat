@@ -50,7 +50,11 @@
 							</li>
 						{{else}}
 							<li class="start">
-								{{_ "Start_of_conversation"}}
+								{{#if isGame}}
+									Pre-game
+								{{else}}
+									{{_ "Start_of_conversation"}}
+								{{/if}}
 							</li>
 						{{/if}}
 						{{#each messagesHistory}}
@@ -104,7 +108,6 @@
 								{{/if}}
 							{{/with}}
 						</div>
-						{{!--
 						<div class="formatting-tips" aria-hidden="true" dir="auto">
 							<b>*{{_ "bold"}}*</b>
 							<i>_{{_ "italics"}}_</i>
@@ -157,10 +160,12 @@
 							{{#with roomUsers}}
 								<div class="status">
 									<h2>{{_ "Members_List"}}</h2>
+									{{!--
 									<p>
 										{{{_ "Showing_online_users" total_online=totalOnline total=total}}}
-										{{!--<button class="see-all">{{seeAll}}</button>--}}
+										<button class="see-all">{{seeAll}}</button>
 									</p>
+									--}}
 								</div>
 								<ul class='list clearfix lines'>
 									{{#each users}}

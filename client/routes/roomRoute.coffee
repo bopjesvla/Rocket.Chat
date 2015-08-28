@@ -56,6 +56,14 @@ roomExit = ->
 				mainNode.removeChild child
 
 
+FlowRouter.route '/game/:name',
+	name: 'game'
+
+	action: (params, queryParams) ->
+		openRoom 'g', params.name
+
+	triggersExit: [roomExit]
+
 FlowRouter.route '/channel/:name',
 	name: 'channel'
 

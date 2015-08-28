@@ -182,7 +182,10 @@ Template.room.helpers
 
 	isGroupChat: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
-		return room?.t in ['c', 'p']
+		return room?.t in ['c', 'p', 'g']
+	
+	isGame: ->
+		return room?.t?[0] = 'g'
 
 	userActiveByUsername: (username) ->
 		status = Session.get 'user_' + username + '_status'

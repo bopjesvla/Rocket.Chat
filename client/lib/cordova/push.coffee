@@ -30,6 +30,8 @@ if Meteor.isCordova
 					FlowRouter.go 'group', name: notification.payload.name
 				when 'd'
 					FlowRouter.go 'direct', username: notification.payload.name
+				when 'g'
+					FlowRouter.go 'game', name: notification.payload.name
 
 	Push.addListener 'message', (notification) ->
 		Meteor.call 'log', 'CLIENT', 'message', arguments

@@ -14,6 +14,7 @@ Template.privateHistory.helpers
 			when 'd' then 'icon-at'
 			when 'c' then 'icon-hash'
 			when 'p' then 'icon-lock'
+			when 'g' then 'icon-gamepad'
 
 	creation: ->
 		return moment(this.ts).format('LLL')
@@ -29,6 +30,8 @@ Template.privateHistory.helpers
 				return FlowRouter.path 'group', { name: this.name }
 			when 'd'
 				return FlowRouter.path 'direct', { username: this.name }
+			when 'g'
+				FlowRouter.path('game', {name: this.name})
 
 Template.privateHistory.events
 	'keydown #history-filter': (event) ->
