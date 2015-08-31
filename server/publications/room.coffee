@@ -12,7 +12,7 @@ Meteor.publish 'room', (typeName) ->
 
 	query = {}
 
-	if type in ['c', 'p']
+	if type in ['c', 'p', 'g']
 		query =
 			t: type
 			name: name

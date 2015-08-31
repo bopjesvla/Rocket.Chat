@@ -12,5 +12,5 @@ Meteor.publish 'activeUsers', ->
 	,
 		fields:
 			username: 1
-			status: 1
+			statusConnection: 1
 			utcOffset: 1

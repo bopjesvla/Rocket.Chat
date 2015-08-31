@@ -1,5 +1,5 @@
 loadMissedMessages = (rid) ->
-	lastMessage = ChatMessage.findOne({rid: 'GENERAL'}, {sort: {ts: -1}, limit: 1})
+	lastMessage = ChatMessage.findOne({rid: 'lobby'}, {sort: {ts: -1}, limit: 1})
 	if not lastMessage?
 		return
 
@@ -42,6 +42,7 @@ Meteor.startup ->
 
 	init = ->
 		subscription = Meteor.subscribe('subscription')
+		Meteor.subscribe('signups')
 		return subscription
 
 	close = (typeName) ->

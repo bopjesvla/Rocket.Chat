@@ -28,6 +28,7 @@ Meteor.methods
 			name: name
 			msgs: 0
 			u: u
+			phase: "signups"
 
 		RocketChat.callbacks.run 'beforeCreateChannel', user, room
 

@@ -16,7 +16,8 @@ Template.sideNav.events
 		SideNav.toggleCurrent()
 
 	'mouseenter .header': ->
-		SideNav.overArrow()
+		if SideNav.flexStatus
+			SideNav.overArrow()
 
 	'mouseleave .header': ->
 		SideNav.leaveArrow()

@@ -271,7 +271,8 @@ Template.room.helpers
 			return moment(@lastLogin).format('LLL')
 
 	canJoin: ->
-		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
+		room = ChatRoom.findOne(this._id, { reactive: false })
+		return room?.t is 'c' or (room?.t is 'g' and room.phase = 'signups')
 
 	canRecordAudio: ->
 		return navigator.getUserMedia? or navigator.webkitGetUserMedia?

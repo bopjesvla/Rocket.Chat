@@ -19,7 +19,7 @@ Meteor.publish 'onlineUsers', (name) ->
 		fields:
 			username: 1
 			name: 1
-			status: 1
+			statusConnection: 1
 			utcOffset: 1
 		sort:
 			lastLogin: -1

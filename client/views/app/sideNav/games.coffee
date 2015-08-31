@@ -6,7 +6,7 @@ Template.games.helpers
 		return 'active' if ChatSubscription.findOne({ t: { $in: ['g']}, f: { $ne: true }, open: true, rid: Session.get('openedRoom') }, { fields: { _id: 1 } })?
 
 	rooms: ->
-		return ChatSubscription.find { t: { $in: ['g']}, f: { $ne: true }, open: true }, { sort: 't': 1, 'name': 1 }
+		return ChatRoom.find { t: 'g', phase: 'signups' }, { sort: 't': 1, 'name': 1 }
 
 Template.games.events
 	'click .add-room': (e, instance) ->
