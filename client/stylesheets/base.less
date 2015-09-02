@@ -2278,6 +2278,9 @@ a.github-fork {
 	.popup-user-status-busy {
 		background-color: @status-busy;
 	}
+	.popup-slash-command-description {
+		float: right;
+	}
 	.message-form {
 		> div {
 			position: relative;
@@ -2782,8 +2785,6 @@ a.github-fork {
 		overflow-x: hidden;
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
-		.calc(height,
-		~"100% - " @footer-min-height + @header-min-height);
 		> div {
 			.transition(transform .45s cubic-bezier(.5,
 			0,
