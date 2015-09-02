@@ -275,7 +275,7 @@ Template.room.helpers
 
 	canJoin: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
-		return room?.t is 'c' or (room?.t is 'g' and room.phase = 'signups')
+		return room?.t is 'c' or (room?.t is 'g' and room.gs = 'signups')
 
 	canRecordAudio: ->
 		return navigator.getUserMedia? or navigator.webkitGetUserMedia?

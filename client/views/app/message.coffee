@@ -17,7 +17,7 @@ Template.message.helpers
 	body: ->
 		switch this.t
 			when 'r'  then t('Room_name_changed', { room_name: this.msg, user_by: this.u.username })
-			when 'au' then t('User_added_by', { user_added: this.msg, user_by: this.u.username })
+			when 'au' then t('User_added', { user_added: this.msg, user_by: this.u.username })
 			when 'ru' then t('User_removed_by', { user_removed: this.msg, user_by: this.u.username })
 			when 'ul' then t('User_left', { user_left: this.u.username })
 			when 'nu' then t('User_added', { user_added: this.u.username })

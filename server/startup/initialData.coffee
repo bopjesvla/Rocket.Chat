@@ -15,7 +15,22 @@ Meteor.startup ->
 				t: 'c'
 				name: 'lobby'
 				msgs: 0
-
+		
+		console.log(MafiaSetup)
+		
+		if not MafiaSetup.findOne('name': 'vengeful')?
+			MafiaSetup.insert
+				ts: new Date()
+				u: 'Bob'
+				name: 'vengeful'
+				size: 5
+				roles:
+					t:
+						_ven: 3
+					m:
+						gf: 1
+						m: 1
+		
 		if process.env.ADMIN_EMAIL? and process.env.ADMIN_PASS? 
 			re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
 			if re.test process.env.ADMIN_EMAIL

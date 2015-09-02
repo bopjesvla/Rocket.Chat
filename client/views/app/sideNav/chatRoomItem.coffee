@@ -26,7 +26,7 @@ Template.chatRoomItem.helpers
 			when 'g' then return 'icon-gamepad'
 
 	active: ->
-		if Session.get('openedRoom') is this.rid
+		if this.rid? and Session.get('openedRoom') is this.rid
 			return 'active'
 
 	canLeave: ->

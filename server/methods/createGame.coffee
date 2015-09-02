@@ -1,9 +1,9 @@
 Meteor.methods
-	createGame: (name, setup) ->
+	createGame: (setup) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 'invalid-user', "[methods] createGame -> Invalid user"
 
-		if not /^[0-9a-z-_]+$/i.test name
+		if not setup?.name? or not /^[a-zA-Z-_ ]+$/i.test name
 			throw new Meteor.Error 'name-invalid'
 
 		console.log '[methods] createGame -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
@@ -28,7 +28,7 @@ Meteor.methods
 			name: name
 			msgs: 0
 			u: u
-			phase: "signups"
+			gs: "signups"
 
 		RocketChat.callbacks.run 'beforeCreateChannel', user, room
 

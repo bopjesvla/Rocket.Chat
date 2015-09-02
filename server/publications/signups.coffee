@@ -10,7 +10,7 @@ Meteor.publish 'signups', () ->
 
 	ChatRoom.find
 		t: 'g'
-		phase: 'signups'
+		gs: 'signups'
 	,
 		fields:
 			name: 1
@@ -18,4 +18,4 @@ Meteor.publish 'signups', () ->
 			cl: 1
 			u: 1
 			usernames: 1
-			phase: 1
+			gs: 1
