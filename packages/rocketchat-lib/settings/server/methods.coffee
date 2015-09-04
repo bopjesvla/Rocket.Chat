@@ -48,7 +48,7 @@ Meteor.methods
 	saveSetting: (_id, value) ->
 		console.log '[method] saveSetting', _id, value
 		if Meteor.userId()?
-			user = Meteor.users.findOne Meteor.userId()
+			user = Meteor.user()
 		
 		unless user?.admin is true
 			throw new Meteor.Error 503, 'Not authorized'

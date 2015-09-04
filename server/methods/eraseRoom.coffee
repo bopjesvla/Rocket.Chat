@@ -2,7 +2,7 @@ Meteor.methods
 	eraseRoom: (rid) ->
 		fromId = Meteor.userId()
 
-		user = Meteor.users.findOne Meteor.userId()
+		user = Meteor.user()
 		if user.admin is true
 
 

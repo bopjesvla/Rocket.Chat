@@ -31,7 +31,7 @@ Template.privateHistory.helpers
 			when 'd'
 				return FlowRouter.path 'direct', { username: this.name }
 			when 'g'
-				FlowRouter.path('game', {name: this.name})
+				FlowRouter.path('game', {name: this.name.split(" ").join("_")})
 
 Template.privateHistory.events
 	'keydown #history-filter': (event) ->

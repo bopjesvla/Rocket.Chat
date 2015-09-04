@@ -3,7 +3,7 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] deleteUser -> Invalid user")
 		
-		user = Meteor.users.findOne Meteor.userId()
+		user = Meteor.user()
 		unless user?.admin is true
 			throw new Meteor.Error 'not-authorized', '[methods] deleteUser -> Not authorized'
 

@@ -26,7 +26,7 @@ Template.chatRoomItem.helpers
 			when 'g' then return 'icon-gamepad'
 
 	active: ->
-		if this.rid? and Session.get('openedRoom') is this.rid
+		if Session.get('openedRoom')? and Session.get('openedRoom') is this.rid
 			return 'active'
 
 	canLeave: ->
@@ -50,7 +50,11 @@ Template.chatRoomItem.helpers
 			when 'c'
 				FlowRouter.path('channel', {name: this.name})
 			when 'g'
-				FlowRouter.path('game', {name: this.name})
+				FlowRouter.path('game', {name: this.name.split(" ").join("_")})
+
+Template.chatRoomItem.created = ->
+	if this.data.t is 'g'
+		this.data.rid ?= this.data._id
 
 Template.chatRoomItem.rendered = ->
 	if not (FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.data.rid) and not this.data.ls

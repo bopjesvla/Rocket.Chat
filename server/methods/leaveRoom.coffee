@@ -5,9 +5,12 @@ Meteor.methods
 
 		unless Meteor.userId()?
 			throw new Meteor.Error 300, 'Usuário não logado'
-
+		
 		room = ChatRoom.findOne rid
 		user = Meteor.user()
+		
+		if room.usernames.indexOf(user.username) is -1
+			throw new Meteor.Error 300, "You aren't in this room"
 
 		RocketChat.callbacks.run 'beforeLeaveRoom', user, room
 
@@ -20,7 +23,13 @@ Meteor.methods
 				name: room.name
 		,
 			multi: true
-
+		
+		if room.gs is "filled"
+			update.$set = {gs: "signups"}
+		else if room.gs is "signups" and room.usernames.length is 1
+			update.$set = {gs: "abandoned"}
+		
+		
 		if room.t isnt 'c' and room.usernames.indexOf(user.username) isnt -1
 			removedUser = user
 

@@ -69,7 +69,8 @@ FlowRouter.route '/game/:name',
 	name: 'game'
 
 	action: (params, queryParams) ->
-		openRoom 'g', params.name
+		Session.set 'showUserInfo'
+		openRoom 'g', params.name.split("_").join(" ")
 
 	triggersExit: [roomExit]
 

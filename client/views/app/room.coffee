@@ -143,7 +143,7 @@ Template.room.helpers
 		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
 	canDirectMessage: ->
-		return Meteor.user()?.username isnt this.username
+		return roomData.t isnt 'g' and Meteor.user()?.username isnt this.username
 
 	roomNameEdit: ->
 		return Session.get('roomData' + this._id)?.name
@@ -169,10 +169,10 @@ Template.room.helpers
 
 	isGroupChat: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
-		return room?.t in ['c', 'p', 'g']
+		return roomData?.t in ['c', 'p', 'g']
 	
 	isGame: ->
-		return room?.t?[0] = 'g'
+		return roomData?.t?[0] = 'g'
 
 	userActiveByUsername: (username) ->
 		status = Session.get 'user_' + username + '_status'

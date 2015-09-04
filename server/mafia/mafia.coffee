@@ -1,0 +1,2 @@
+@startGame = () ->
+	console.log("yay")
