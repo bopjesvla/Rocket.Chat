@@ -2,7 +2,7 @@ Template.adminRoomInfo.helpers
 	type: ->
 		return if @t is 'd' then 'at' else if @t is 'p' then 'lock' else 'hash'
 	name: ->
-		if @t is 'c' or @t is 'p'
+		if @t in ['c', 'p', 'g']
 			return @name
 		else if @t is 'd'
 			return @usernames.join ' x '
@@ -14,6 +14,8 @@ Template.adminRoomInfo.helpers
 				FlowRouter.path('group', {name: @name})
 			when 'c'
 				FlowRouter.path('channel', {name: @name})
+			when 'g'
+				FlowRouter.path('game', {name: @name})
 
 Template.adminRoomInfo.events
 	'click .delete': ->

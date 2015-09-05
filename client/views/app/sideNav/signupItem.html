@@ -1,5 +1,5 @@
-<template name="chatRoomItem">
-	<li class="link-room-{{rid}} {{active}} {{#if unread}}has-unread{{/if}} {{#if alert}}has-alert{{/if}}">
+<template name="signupItem">
+	<li class="link-room-{{_id}} {{active}} {{#if unread}}has-unread{{/if}} {{#if alert}}has-alert{{/if}}">
 		<a class="open-room" href="{{route}}" title="{{name}}">
 			{{#if unread}}
 				<span class="unread">{{unread}}</span>

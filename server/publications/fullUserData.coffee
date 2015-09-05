@@ -9,6 +9,7 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 		username: 1
 		status: 1
 		utcOffset: 1
+		g: 1
 		
 	if user.admin is true
 		fields = _.extend fields,

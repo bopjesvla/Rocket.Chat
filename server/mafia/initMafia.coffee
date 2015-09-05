@@ -1,3 +1,5 @@
+@MafiaTimeouts = {}
+
 @MafiaAlignments =
 	t:
 		n: "Town"

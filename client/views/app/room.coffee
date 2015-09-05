@@ -169,7 +169,7 @@ Template.room.helpers
 
 	isGroupChat: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
-		return roomData?.t in ['c', 'p', 'g']
+		return room?.t in ['c', 'p', 'g']
 	
 	isGame: ->
 		return roomData?.t?[0] = 'g'
@@ -274,6 +274,7 @@ Template.room.helpers
 			return moment(@lastLogin).format('LLL')
 
 	canJoin: ->
+		return false if Meteor.user().g?
 		room = ChatRoom.findOne(this._id, { reactive: false })
 		return room?.t is 'c' or (room?.t is 'g' and room.gs = 'signups')
 
@@ -360,7 +361,7 @@ Template.room.events
 	'click .join': (event) ->
 		event.stopPropagation()
 		event.preventDefault()
-		Meteor.call 'joinRoom', @_id
+		Meteor.call 'joinRoom', @_id#, (e) -> toastr.error(e.reason) if (e)
 
 	'focus .input-message': (event) ->
 		KonchatNotification.removeRoomNotification @_id
@@ -427,7 +428,7 @@ Template.room.events
 
 	'click .user-card-message': (e) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
-		if roomData.t in ['c', 'p']
+		if roomData.t in ['c', 'p', 'g']
 			Session.set('flexOpened', true)
 			Session.set('showUserInfo', $(e.currentTarget).data('username'))
 		else
@@ -457,7 +458,7 @@ Template.room.events
 
 				if result?.rid?
 					$('#user-add-search').val('')
-		else if roomData.t in ['c', 'p']
+		else if roomData.t in ['c', 'p', 'g']
 			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
 				if error
 					return Errors.throw error.reason
@@ -673,6 +674,10 @@ Template.room.onRendered ->
 	template = this
 
 	onscroll = _.throttle ->
+		if wrapper.scrollTop < 10
+			wrapper.scrollTop = 1
+			RoomHistoryManager.getMore template.data._id, if template.data.t is 'g' then 0 else 50
+		
 		template.atBottom = wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
 	, 200
 

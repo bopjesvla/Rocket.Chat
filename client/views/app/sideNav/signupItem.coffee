@@ -1,11 +1,11 @@
-Template.chatRoomItem.helpers
+Template.signupItem.helpers
 
 	alert: ->
-		if FlowRouter.getParam('_id') isnt this.rid or not document.hasFocus()
+		if FlowRouter.getParam('_id') isnt this._id or not document.hasFocus()
 			return this.alert
 
 	unread: ->
-		if (FlowRouter.getParam('_id') isnt this.rid or not document.hasFocus()) and this.unread > 0
+		if (FlowRouter.getParam('_id') isnt this._id or not document.hasFocus()) and this.unread > 0
 			return this.unread
 
 	isDirectRoom: ->
@@ -26,11 +26,11 @@ Template.chatRoomItem.helpers
 			when 'g' then return 'icon-gamepad'
 
 	active: ->
-		if Session.get('openedRoom')? and Session.get('openedRoom') is this.rid
+		if Session.get('openedRoom')? and Session.get('openedRoom') is this._id
 			return 'active'
 
 	canLeave: ->
-		return !!ChatSubscription.find({rid: this.rid, t: {$ne: 'd'}}).count()
+		return !!ChatSubscription.find({rid: this._id, t: {$ne: 'd'}}).count()
 	
 	canHide: ->
 		return this.gs isnt "signups"
@@ -46,11 +46,11 @@ Template.chatRoomItem.helpers
 			when 'g'
 				FlowRouter.path('game', {name: this.name.split(" ").join("_")})
 
-Template.chatRoomItem.rendered = ->
-	if not (FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.data.rid) and not this.data.ls
-		KonchatNotification.newRoom(this.data.rid)
+Template.signupItem.rendered = ->
+	if not (FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.data._id) and not this.data.ls
+		KonchatNotification.newRoom(this.data._id)
 
-Template.chatRoomItem.events
+Template.signupItem.events
 
 	'click .open-room': (e) ->
 		menu.close()
@@ -59,18 +59,18 @@ Template.chatRoomItem.events
 		e.stopPropagation()
 		e.preventDefault()
 
-		if FlowRouter.getRouteName() in ['channel', 'group', 'direct', 'game'] and Session.get('openedRoom') is this.rid
+		if FlowRouter.getRouteName() in ['channel', 'group', 'direct', 'game'] and Session.get('openedRoom') is this._id
 			FlowRouter.go 'home'
 
-		Meteor.call 'hideRoom', this.rid
+		Meteor.call 'hideRoom', this._id
 
 	'click .leave-room': (e) ->
 		e.stopPropagation()
 		e.preventDefault()
 
-		if FlowRouter.getRouteName() in ['channel', 'group', 'direct', 'game'] and Session.get('openedRoom') is this.rid
+		if FlowRouter.getRouteName() in ['channel', 'group', 'direct', 'game'] and Session.get('openedRoom') is this._id
 			FlowRouter.go 'home'
 
 		RoomManager.close this.t + this.name
 		
-		Meteor.call 'leaveRoom', this.rid || this._id
+		Meteor.call 'leaveRoom', this._id

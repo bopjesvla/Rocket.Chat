@@ -74,7 +74,7 @@ Template.messagePopupConfig.helpers
 			getFilter: (collection, filter) ->
 				commands = []
 				for command, item of collection
-					if command.indexOf(filter) > -1
+					if command.indexOf(filter) is 0
 						commands.push
 							_id: command
 							params: item.params

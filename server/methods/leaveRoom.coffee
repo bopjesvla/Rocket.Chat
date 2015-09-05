@@ -9,7 +9,7 @@ Meteor.methods
 		room = ChatRoom.findOne rid
 		user = Meteor.user()
 		
-		if room.usernames.indexOf(user.username) is -1
+		unless room? and room.usernames.indexOf(user.username) isnt -1
 			throw new Meteor.Error 300, "You aren't in this room"
 
 		RocketChat.callbacks.run 'beforeLeaveRoom', user, room
@@ -29,8 +29,7 @@ Meteor.methods
 		else if room.gs is "signups" and room.usernames.length is 1
 			update.$set = {gs: "abandoned"}
 		
-		
-		if room.t isnt 'c' and room.usernames.indexOf(user.username) isnt -1
+		if room.t isnt 'c'
 			removedUser = user
 
 			ChatMessage.insert
@@ -57,6 +56,9 @@ Meteor.methods
 		ChatSubscription.remove { rid: rid, 'u._id': Meteor.userId() }
 
 		ChatRoom.update rid, update
+		
+		if user.g is rid
+			Meteor.users.update Meteor.userId(), {$unset: g: 1}
 
 		Meteor.defer ->
 

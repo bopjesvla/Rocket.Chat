@@ -19,6 +19,9 @@
 					{{#if $eq type 'd'}}
 						{{{_ 'No_user_with_username_%s_was_found' name}}}
 					{{/if}}
+					{{#if $eq type 'g'}}
+						{{{_ 'Game not found' name}}}
+					{{/if}}
 				{{/with}}
 			</div>
 		</div>

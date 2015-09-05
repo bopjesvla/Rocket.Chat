@@ -82,7 +82,7 @@ Meteor.startup ->
 					query =
 						t: type
 
-					if type in ['c', 'p']
+					if type in ['c', 'p', 'g']
 						query.name = name
 					else if type is 'd'
 						query.usernames = $all: [Meteor.user()?.username, name]

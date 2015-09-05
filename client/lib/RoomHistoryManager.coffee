@@ -41,8 +41,8 @@
 
 		return room.hasMore.get()
 
-	getMoreIfIsEmpty = (rid) ->
-		room = getRoom rid
+	getMoreIfIsEmpty = (rid, limit=defaultLimit) ->
+		room = getRoom rid, limit
 
 		if room.loaded is 0
 			getMore rid
