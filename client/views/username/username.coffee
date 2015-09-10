@@ -2,12 +2,13 @@ Template.username.onCreated ->
 	self = this
 	self.username = new ReactiveVar
 
-	Meteor.call 'getUsernameSuggestion', (error, username) ->
-		self.username.set
-			ready: true
-			username: username
-		Meteor.defer ->
-			self.find('input').focus()
+	# Meteor.call 'getUsernameSuggestion', (error, username) ->
+	# 	self.username.set
+	# 		ready: true
+	# 		username: username
+	# 	Meteor.defer ->
+	# 		self.find('input').focus()
+	# 		self.find('input').select()
 
 Template.username.helpers
 	username: ->
@@ -46,3 +47,4 @@ Template.username.events
 
 			if not err?
 				Meteor.call 'joinDefaultChannels'
+				FlowRouter.go 'index'

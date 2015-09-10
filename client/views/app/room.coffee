@@ -172,7 +172,9 @@ Template.room.helpers
 		return room?.t in ['c', 'p', 'g']
 	
 	isGame: ->
-		return roomData?.t?[0] = 'g'
+		roomData = Session.get('roomData' + this._id)
+		return '' unless roomData
+		return roomData.t is 'g'
 
 	userActiveByUsername: (username) ->
 		status = Session.get 'user_' + username + '_status'
@@ -181,7 +183,7 @@ Template.room.helpers
 		return
 
 	roomUsers: ->
-		room = ChatRoom.findOne(this._id, { reactive: false })
+		room = ChatRoom.findOne(this._id, { fields: usernames: 1, t: 1 })
 		users = []
 		onlineUsers = RoomManager.onlineUsers.get()
 
@@ -198,6 +200,12 @@ Template.room.helpers
 					username: username
 					status: onlineUsers[username]?.status
 					utcOffset: utcOffset
+			else if room.t is 'g'
+				users.push
+					username: username
+					status: "offline"
+					utcOffset: ""
+			
 
 		users = _.sortBy users, 'username'
 
@@ -274,9 +282,12 @@ Template.room.helpers
 			return moment(@lastLogin).format('LLL')
 
 	canJoin: ->
-		return false if Meteor.user().g?
+		user = Meteor.user()
+		
+		return false if user.ingame
+		
 		room = ChatRoom.findOne(this._id, { reactive: false })
-		return room?.t is 'c' or (room?.t is 'g' and room.gs = 'signups')
+		return room?.t is 'c' or (room.t is 'g' and room.gs = 'signups' and not user.g?)
 
 	canRecordAudio: ->
 		return navigator.getUserMedia? or navigator.webkitGetUserMedia?
@@ -675,8 +686,10 @@ Template.room.onRendered ->
 
 	onscroll = _.throttle ->
 		if wrapper.scrollTop < 10
-			wrapper.scrollTop = 1
-			RoomHistoryManager.getMore template.data._id, if template.data.t is 'g' then 0 else 50
+			scrollBottom = wrapper.scrollHeight
+			
+			RoomHistoryManager.getMore template.data._id, 50,
+			(-> (wrapper.scrollTop = wrapper.scrollHeight - scrollBottom))
 		
 		template.atBottom = wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
 	, 200
@@ -721,8 +734,9 @@ Template.room.onRendered ->
 	webrtc.onSelfUrl = (url) ->
 		Session.set('flexOpened', true)
 		Session.set('selfVideoUrl', url)
-
-	RoomHistoryManager.getMoreIfIsEmpty this.data._id
+	
+	room = Session.get('roomData' + template.data._id)
+	RoomHistoryManager.getMoreIfIsEmpty template.data._id, if room.t is 'g' then 0 else 50
 
 renameRoom = (rid, name) ->
 	name = name?.toLowerCase().trim()

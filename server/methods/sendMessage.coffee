@@ -6,9 +6,9 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] sendMessage -> Invalid user")
 
-		console.log '[methods] sendMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
+		# console.log '[methods] sendMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		user = Meteor.users.findOne Meteor.userId(), fields: username: 1
+		user = Meteor.users.findOne Meteor.userId(), fields: {username: 1, ingame: 1, g: 1}
 
 		room = Meteor.call 'canAccessRoom', message.rid, user._id
 

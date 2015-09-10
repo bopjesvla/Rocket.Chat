@@ -28,12 +28,16 @@ Template.signupItem.helpers
 	active: ->
 		if Session.get('openedRoom')? and Session.get('openedRoom') is this._id
 			return 'active'
-
+	
+	canJoin: ->
+		return this.usernames.length < this.size and not Meteor.user().g and
+			!ChatSubscription.find({rid: this._id, t: {$ne: 'd'}}).count()
+	
 	canLeave: ->
 		return !!ChatSubscription.find({rid: this._id, t: {$ne: 'd'}}).count()
 	
 	canHide: ->
-		return this.gs isnt "signups"
+		return this.gs not in ["signups", "filled"]
 
 	route: ->
 		return switch this.t
@@ -74,3 +78,6 @@ Template.signupItem.events
 		RoomManager.close this.t + this.name
 		
 		Meteor.call 'leaveRoom', this._id
+		
+	'click .join-room': (e) ->
+		Meteor.call 'joinRoom', this._id

@@ -7,8 +7,8 @@ accounts-facebook
 accounts-github
 accounts-google
 accounts-meteor-developer
-accounts-twitter
 accounts-password
+accounts-twitter
 coffeescript
 email
 fastclick
@@ -24,6 +24,7 @@ arunoda:streams
 rocketchat:lib
 
 rocketchat:autolinker
+rocketchat:colors
 rocketchat:emojione
 rocketchat:favico
 rocketchat:file
@@ -32,9 +33,10 @@ rocketchat:ldap
 rocketchat:logger
 rocketchat:markdown
 rocketchat:me
-rocketchat:slashcommands-invite
 rocketchat:mentions
 rocketchat:oembed
+rocketchat:slashcommands-invite
+rocketchat:slashcommands-leave
 rocketchat:webrtc
 #rocketchat:external
 #rocketchat:hubot
@@ -66,7 +68,9 @@ pauli:accounts-linkedin
 percolate:migrations
 percolate:synced-cron
 raix:handlebar-helpers
+raix:push@2.6.13-rc.1
 raix:ui-dropped-event
+steffo:meteor-accounts-saml
 tap:i18n
 tmeasday:crypto-md5
 tmeasday:errors
@@ -74,8 +78,6 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
-rocketchat:colors
-raix:push@2.6.13-rc.1
 jalik:ufs
 jalik:ufs-gridfs
 monbro:mongodb-mapreduce-aggregation

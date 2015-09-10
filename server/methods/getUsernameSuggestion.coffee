@@ -1,6 +1,6 @@
 slug = (text) ->
-	text = slugify text, '.'
-	return text.replace(/[^0-9a-z-_.]/g, '')
+	text = slugify text, '_'
+	return text.replace(/[^0-9a-z_]/g, '')
 
 usernameIsAvaliable = (username) ->
 	if username.length < 1

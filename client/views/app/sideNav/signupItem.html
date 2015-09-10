@@ -4,7 +4,7 @@
 			{{#if unread}}
 				<span class="unread">{{unread}}</span>
 			{{/if}}
-			<i class="{{roomIcon}} {{userStatus}}"></i>
+			<span class='signups'>{{usernames.length}}/{{size}}</span>
 			<span class='name'>{{name}}</span>
 			<span class='opt'>
 				{{#if canHide}}
@@ -12,6 +12,9 @@
 				{{/if}}
 				{{#if canLeave}}
 					<i class="icon-logout leave-room" title="{{_ "Leave_room"}}"></i>
+				{{/if}}
+				{{#if canJoin}}
+					<i class="icon-login join-room" title="{{_ "Join room"}}"></i>
 				{{/if}}
 			</span>
 		</a>

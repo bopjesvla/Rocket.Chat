@@ -12,7 +12,7 @@
 
 		return histories[rid]
 
-	getMore = (rid, limit=defaultLimit) ->
+	getMore = (rid, limit=defaultLimit, callback) ->
 		room = getRoom rid
 		if room.hasMore.curValue isnt true
 			return
@@ -33,8 +33,10 @@
 			ChatMessage.insert item for item in result
 			room.isLoading.set false
 			room.loaded += result.length
-			if result.length < limit
+			if limit is 0 or result.length < limit
 				room.hasMore.set false
+			if callback?
+				callback()
 
 	hasMore = (rid) ->
 		room = getRoom rid
@@ -42,10 +44,10 @@
 		return room.hasMore.get()
 
 	getMoreIfIsEmpty = (rid, limit=defaultLimit) ->
-		room = getRoom rid, limit
+		room = getRoom rid
 
 		if room.loaded is 0
-			getMore rid
+			getMore rid, limit
 
 	isLoading = (rid) ->
 		room = getRoom rid

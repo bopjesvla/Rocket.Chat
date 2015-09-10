@@ -19,13 +19,7 @@ else
 
 			username = username.replace('@', '')
 
-			user = Meteor.users.findOne({ username: username })
-
-			if not user?
-				return
-
-			Meteor.runAsUser user._id, ->
-				Meteor.call 'joinRoom', item.rid
+			Meteor.call 'addUserToRoom', {rid:item.rid,username: username}
 
 
 	RocketChat.slashCommands.add 'invite', Invite

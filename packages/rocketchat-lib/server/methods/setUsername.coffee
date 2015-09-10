@@ -7,10 +7,10 @@ Meteor.methods
 
 		user = Meteor.user()
 
-		if user.username is username
-			return username
+		if user.username
+			throw new Meteor.Error 'username-set'
 
-		if not /^[0-9a-zA-Z-_.]{3,15}$/.test username
+		if not /^[a-z0-9]\w{1,8}[a-z0-9]$/i.test username
 			throw new Meteor.Error 'username-invalid'
 
 		if not RocketChat.checkUsernameAvailability username

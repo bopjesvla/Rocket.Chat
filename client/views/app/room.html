@@ -40,26 +40,24 @@
 			</div>
 			<div class="messages-box">
 				<div class="wrapper">
+					{{#if hasMore}}
+						<div class="load-more">
+							<button class="button secondary load-more {{isLoading}}">
+								<i class="icon-spin4 animate-spin loading-icon hidden"></i>
+								<div>{{_ "Load_more"}}</div>
+							</button>
+						</div>
+					{{/if}}
 					<ul>
-						{{#if hasMore}}
-							<li class="load-more">
-								<button class="button secondary load-more {{isLoading}}">
-									<i class="icon-spin4 animate-spin loading-icon hidden"></i>
-									<div>{{_ "Load_more"}}</div>
-								</button>
-							</li>
+						{{#unless isGame}}
+							{{#each messagesHistory}}
+								{{#nrr nrrargs 'message' .}}{{/nrr}}
+							{{/each}}
 						{{else}}
-							<li class="start">
-								{{#if isGame}}
-									Pre-game
-								{{else}}
-									{{_ "Start_of_conversation"}}
-								{{/if}}
-							</li>
-						{{/if}}
-						{{#each messagesHistory}}
-							{{#nrr nrrargs 'message' .}}{{/nrr}}
-						{{/each}}
+							{{#each messagesHistory}}
+								{{#nrr nrrargs 'message' .}}{{/nrr}}
+							{{/each}}
+						{{/unless}}
 					</ul>
 				</div>
 				<div class="new-message not">
@@ -125,7 +123,7 @@
 						</form>
 					{{else}}
 						<div>
-							You cannot post in this room since you're alive in {{ongoingGame}}.
+							You cannot post in this room since you're alive in an ongoing game.
 						</div>
 					{{/unless}}
 				{{else}}
@@ -135,7 +133,11 @@
 							{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
 							<button class="button join"><span><i class="icon-login"></i> {{_ "join"}}</span></button>
 						{{else}}
-							You cannot join this room since you're alive in an ongoing game.
+							{{#if isGame}}
+								You cannot join this game because you're already in another one.
+							{{else}}
+								You cannot join this channel because you're alive in an ongoing game.
+							{{/if}}
 						{{/if}}
 					</div>
 				{{/if}}

@@ -9,6 +9,9 @@ Meteor.methods
 		room = ChatRoom.findOne rid
 		user = Meteor.user()
 		
+		if user.g is rid
+			Meteor.users.update Meteor.userId(), {$unset: g: 1, ingame: 1}
+		
 		unless room? and room.usernames.indexOf(user.username) isnt -1
 			throw new Meteor.Error 300, "You aren't in this room"
 
@@ -26,7 +29,13 @@ Meteor.methods
 		
 		if room.gs is "filled"
 			update.$set = {gs: "signups"}
-		else if room.gs is "signups" and room.usernames.length is 1
+			update.$unset = {dl: 1}
+			
+			if MafiaTimeouts[rid]?
+				Meteor.clearTimeout(MafiaTimeouts[rid])
+				delete MafiaTimeouts[rid]
+				
+		else if room.gs isnt "finished" and room.usernames.length is 1
 			update.$set = {gs: "abandoned"}
 		
 		if room.t isnt 'c'
@@ -56,9 +65,6 @@ Meteor.methods
 		ChatSubscription.remove { rid: rid, 'u._id': Meteor.userId() }
 
 		ChatRoom.update rid, update
-		
-		if user.g is rid
-			Meteor.users.update Meteor.userId(), {$unset: g: 1}
 
 		Meteor.defer ->
 

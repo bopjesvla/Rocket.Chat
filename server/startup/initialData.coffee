@@ -16,8 +16,8 @@ Meteor.startup ->
 				name: 'lobby'
 				msgs: 0
 		
-		if not MafiaSetup.findOne('name': 'vengeful')?
-			MafiaSetup.insert
+		if not MafiaSetups.findOne('name': 'vengeful')?
+			MafiaSetups.insert
 				ts: new Date()
 				u: 'Bob'
 				name: 'vengeful'

@@ -31,9 +31,6 @@ Template.chatRoomItem.helpers
 
 	canLeave: ->
 		return !!ChatSubscription.find({rid: this.rid, t: {$ne: 'd'}}).count()
-	
-	canHide: ->
-		return this.gs isnt "signups"
 
 	route: ->
 		return switch this.t

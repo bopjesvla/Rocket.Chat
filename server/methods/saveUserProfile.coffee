@@ -4,8 +4,8 @@ Meteor.methods
 			if settings.language?
 				Meteor.users.update Meteor.userId(), { $set: { language: settings.language } }
 
-			if settings.password?
-				Accounts.setPassword Meteor.userId(), settings.password, { logout: false }
+			# if settings.password?
+			# 	Accounts.setPassword Meteor.userId(), settings.password, { logout: false }
 
 			profile = {}
 			

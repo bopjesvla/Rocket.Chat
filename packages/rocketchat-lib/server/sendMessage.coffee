@@ -1,9 +1,9 @@
 RocketChat.sendMessage = (user, message, room, options) ->
-
+	
 	if not user or not message?.msg or not room?._id
 		return false
 	
-	if user.g? and room._id isnt user.g
+	if user.ingame and room._id isnt user.g
 		return false
 	
 	message.ts = new Date()

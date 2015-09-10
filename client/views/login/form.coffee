@@ -4,6 +4,9 @@ Template.loginForm.helpers
 
 	showName: ->
 		return 'hidden' unless Template.instance().state.get() is 'register'
+	
+	showUsername: ->
+		return 'hidden' unless Template.instance().state.get() is 'register'
 
 	showPassword: ->
 		return 'hidden' unless Template.instance().state.get() in ['login', 'register']
@@ -31,6 +34,8 @@ Template.loginForm.helpers
 			when 'register'
 				return t('Submit')
 			when 'login'
+				if RocketChat.settings.get('LDAP_Enable')
+					return t('Login') + ' (LDAP)'
 				return t('Login')
 			when 'email-verification'
 				return t('Send_confirmation_email')
@@ -39,6 +44,9 @@ Template.loginForm.helpers
 
 	waitActivation: ->
 		return Template.instance().state.get() is 'wait-activation'
+
+	loginTerms: ->
+		return RocketChat.settings.get 'Layout_Login_Terms'
 		
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
@@ -70,6 +78,8 @@ Template.loginForm.events
 					if error?
 						if error.error is 'Email already exists.'
 							toastr.error t 'Email_already_exists'
+						else if error.error is "username-invalid"
+							toastr.error t 'Username_invalid'
 						else
 							toastr.error error.reason
 						return
@@ -83,7 +93,11 @@ Template.loginForm.events
 						# else
 							# FlowRouter.go 'index'
 			else
-				Meteor.loginWithPassword formData.emailOrUsername, formData.pass, (error) ->
+				loginMethod = 'loginWithPassword'
+				if RocketChat.settings.get('LDAP_Enable')
+					loginMethod = 'loginWithLDAP'
+
+				Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
 					RocketChat.Button.reset(button)
 					if error?
 						if error.error is 'no-valid-email'
@@ -126,6 +140,9 @@ Template.loginForm.onCreated ->
 				validationObj['name'] = t('Invalid_name')
 			if formObj['confirm-pass'] isnt formObj['pass']
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass')
+			unless formObj['username'] and /^[0-9a-z]\w{1,8}[0-9a-z]$/i.test(formObj['username'])
+				validationObj['username'] = t('Username_invalid')
+				toastr.error t('Username_invalid', formObj['username'])
 
 		$("#login-card input").removeClass "error"
 		unless _.isEmpty validationObj

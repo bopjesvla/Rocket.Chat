@@ -1,4 +1,4 @@
-<template name="games">
+<template name="signups">
 	<a href="/home">
 		<h3 class="add-room {{isActive}}">
 			{{_ "Games in sign-ups"}}
@@ -9,7 +9,7 @@
 		{{#each rooms}}
 			{{> signupItem }}
 		{{else}}
-			<p class="empty">{{_ "There are no games in sign-ups yet." }}</p>
+			<p class="empty">{{_ "There are no games in sign-ups at the moment." }}</p>
 		{{/each}}
 	</ul>
 </template>

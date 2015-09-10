@@ -16,12 +16,16 @@ Template.sideNav.events
 		SideNav.toggleCurrent()
 
 	'mouseenter .header': ->
-		if SideNav.flexStatus
-			SideNav.overArrow()
+		# if SideNav.flexStatus
+		# 	SideNav.overArrow()
 
 	'mouseleave .header': ->
-		SideNav.leaveArrow()
+		# SideNav.leaveArrow()
 
 Template.sideNav.onRendered ->
 	SideNav.init()
+	user = Meteor.user()
+	# if user.ingame and Session.get("openedRoom") is user.g
+	# 	SideNav.setFlex "gameBox"
+	# 	SideNav.openFlex()
 	menu.init()

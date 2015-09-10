@@ -52,6 +52,9 @@ Template.message.onViewRendered = (context) ->
 	view = this
 	this._domrange.onAttached (domRange) ->
 		lastNode = domRange.lastNode()
+		if lastNode.previousElementSibling?.dataset?.date isnt lastNode.dataset.date
+			$(lastNode).addClass('new-day')
+
 		if lastNode.nextElementSibling?.dataset?.date is lastNode.dataset.date
 			$(lastNode.nextElementSibling).removeClass('new-day')
 		else
@@ -65,7 +68,7 @@ Template.message.onViewRendered = (context) ->
 				do (item) ->
 					urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')
 					if urlNode?
-						$(urlNode).replaceWith Blaze.toHTMLWithData Template.oembedBaseWidget, item
+						$(lastNode.querySelector('.body')).append Blaze.toHTMLWithData Template.oembedBaseWidget, item
 
 		if not lastNode.nextElementSibling?
 			if lastNode.classList.contains('own') is true

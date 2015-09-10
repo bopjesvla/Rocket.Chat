@@ -2,13 +2,16 @@ Meteor.methods
 	joinRoom: (rid) ->
 		user = Meteor.user()
 		
-		if user.g?
-			throw new Meteor.Error 'already-in-game', 'Cannot join rooms while in a game'
+		if user.ingame?
+			throw new Meteor.Error 'already-in-game', 'Cannot join rooms while in a game.'
 		
 		room = ChatRoom.findOne rid
 		
-		unless room?.t is 'c' or room.t is 'g' and room.gs not in ["ongoing", "filled"]
+		unless not room? or room.t is 'c' or room.t is 'g' and room.gs not in ["ongoing", "filled"]
 			throw new Meteor.Error 403, '[methods] joinRoom -> Not allowed'
+		
+		if room.t is 'g' and user.g?
+			throw new Meteor.Error 'already-in-game', "You're already in a game."
 				
 		unless room.usernames.indexOf(user.username) is -1
 			throw new Meteor.Error 300, "You're already in this room"
@@ -26,7 +29,7 @@ Meteor.methods
 				usernames: user.username
 		
 		if room.gs is "signups" and room.usernames.length is room.size - 1
-			MafiaTimeouts[rid] = Meteor.setTimeout (() -> startGame(rid)), 10000
+			MafiaTimeouts[rid] = Meteor.setTimeout (() -> startGame(rid, room.usernames)), 0
 			update.$set =
 				gs: "filled"
 				dl: new Date(MafiaTimeouts[rid]._idleStart)

@@ -16,5 +16,5 @@ Meteor.startup ->
 		try ChatMessage._ensureIndex { 'expireAt': 1 }, { expireAfterSeconds: 0 } catch e then console.log e
 		try ChatMessage._ensureIndex { 'msg': 'text' } catch e then console.log e
 		
-		try MafiaSetup._ensureIndex { 's': 1, 'm': 1 }, { 'unique': 1 } catch e then console.log e
-		try MafiaSetup._ensureIndex { 'n': 1 }, { 'unique': 1 } catch e then console.log e
+		try MafiaSetups._ensureIndex { 's': 1, 'm': 1 }, { 'unique': 1 } catch e then console.log e
+		try MafiaSetups._ensureIndex { 'n': 1 }, { 'unique': 1 } catch e then console.log e

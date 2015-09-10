@@ -17,6 +17,7 @@ Meteor.methods
 			delete history._id
 			ChatMessage.insert history
 
+		message = ChatMessage.findOne(message.id);
 		message.pts = new Date()
 		message.pinned = true
 

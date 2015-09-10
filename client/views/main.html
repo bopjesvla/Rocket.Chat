@@ -47,23 +47,19 @@
 		{{#unless logged}}
 			{{> loginLayout}}
 		{{else}}
-			{{#unless hasUsername}}
-				{{> username}}
-			{{else}}
-				{{> spotlight}}
-				{{> mobileMessageMenu}}
-				<div id="user-card-popover"></div>
-				<div id="rocket-chat" class="menu-nav menu-closed">
-					<div class="connection-status">
-						{{> status}}
-					</div>
-					<div class="main-content {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}}">
-						{{> Template.dynamic template=center}}
-					</div>
-					{{> sideNav }}
+			{{> spotlight}}
+			{{> mobileMessageMenu}}
+			<div id="user-card-popover"></div>
+			<div id="rocket-chat" class="menu-nav menu-closed">
+				<div class="connection-status">
+					{{> status}}
 				</div>
-				{{> audioNotification }}
-			{{/unless}}
+				<div class="main-content {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}}">
+					{{> Template.dynamic template=center}}
+				</div>
+				{{> sideNav }}
+			</div>
+			{{> audioNotification }}
 		{{/unless}}
 	{{/if}}
 </template>

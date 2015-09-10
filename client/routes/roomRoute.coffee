@@ -13,11 +13,13 @@ openRoom = (type, name) ->
 			query =
 				t: type
 				name: name
+			
+			user = Meteor.user()
 
 			if type is 'd'
 				delete query.name
 				query.usernames =
-					$all: [name, Meteor.user().username]
+					$all: [name, user.username]
 
 			room = ChatRoom.findOne(query)
 			if not room?
@@ -43,6 +45,13 @@ openRoom = (type, name) ->
 				readMessage.enable()
 				readMessage.readNow()
 			, 2000
+			
+			if user.ingame and Session.get("openedRoom") is room._id
+				SideNav.setFlex "gameBox"
+				SideNav.openFlex()
+			else
+				SideNav.closeFlex()
+			
 			# KonchatNotification.removeRoomNotification(params._id)
 
 			if Meteor.Device.isDesktop()
@@ -71,6 +80,7 @@ FlowRouter.route '/game/:name',
 	action: (params, queryParams) ->
 		Session.set 'showUserInfo'
 		openRoom 'g', params.name.split("_").join(" ")
+		
 
 	triggersExit: [roomExit]
 

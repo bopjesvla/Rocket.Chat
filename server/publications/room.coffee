@@ -39,3 +39,7 @@ Meteor.publish 'room', (typeName) ->
 			cl: 1
 			u: 1
 			usernames: 1
+			dl: 1
+			alive: 1
+			dead: 1
+			phase: 1

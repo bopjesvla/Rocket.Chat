@@ -10,12 +10,15 @@ Meteor.publish 'signups', () ->
 
 	ChatRoom.find
 		t: 'g'
-		gs: 'signups'
+		gs: $in: ['signups', 'filled']
 	,
 		fields:
+			ts: 1
 			name: 1
 			t: 1
 			cl: 1
 			u: 1
 			usernames: 1
 			gs: 1
+			size: 1
+		limit: 20

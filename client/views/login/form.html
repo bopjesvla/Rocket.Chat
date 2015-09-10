@@ -17,6 +17,9 @@
 				<div class='input-text active {{showName}}'>
 					<input type="text" name='name' placeholder='{{_ "Name"}}' dir="auto" />
 				</div>
+				<div class='input-text active {{showUsername}}'>
+					<input type="text" name='username' placeholder='{{_ "Username"}}' dir="auto" />
+				</div>
 				<div class='input-text active {{showEmailOrUsername}}'>
 					<input type="text" name='emailOrUsername' placeholder='{{_ "Email_or_username"}}' autocapitalize="off" autocorrect="off" />
 				</div>
@@ -45,6 +48,6 @@
 		</div>
 	</form>
 	<div class='login-terms'>
-		By proceeding to create your account and use Rocket.Chat, you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, you cannot use Rocket.Chat.
+		{{{loginTerms}}}
 	</div>
 </template>

@@ -2,14 +2,19 @@ Meteor.methods
 	createGame: (setup) ->
 		unless Meteor.userId()
 			throw new Meteor.Error 'invalid-user', "[methods] createGame -> Invalid user"
-
-		unless typeof setup?.name is "string" and /^[a-zA-Z-_1-9 ]+$/i.test setup.name
-			throw new Meteor.Error 'name-invalid'
+		
+		user = Meteor.user()
+		{username} = user
+		
+		if user.g?
+			throw new Meteor.Error 'already-in-game', "You're already in a game."
+		
+		unless typeof setup?.name is "string" and /^[\p{L} ]{3,22}$/i.test setup.name
+			throw new Meteor.Error 'setup-name-invalid'
+		
+		{name} = setup
 		
 		now = new Date()
-		name = setup.name
-		user = Meteor.user()
-		username = user.username
 		u =
 			_id: Meteor.userId()
 			username: username
@@ -23,7 +28,7 @@ Meteor.methods
 				p = {}
 				
 				if alignment
-					unless MafiaAlignments[alignment]?
+					unless TeamConfig[alignment]?
 						throw new Meteor.Error 'invalid-setup', "Alignment #{alignment} not found"
 					
 					p.a = alignment
@@ -55,16 +60,14 @@ Meteor.methods
 				plays: 0
 				runs: 1
 			try
-				ms._id = MafiaSetup.insert(ms)
+				ms._id = MafiaSetups.insert(ms)
 			catch e
 				throw new Meteor.Error 'duplicate-key'
 
-		ms ?= MafiaSetup.findAndModify(
+		ms ?= MafiaSetups.findAndModify(
 			query: n: name
 			update: $inc: runs: 1
 		)
-		
-		size = ms.size
 		
 		throw new Meteor.Error 'setup-not-found', "Setup not found" unless ms?
 		throw new Meteor.Error 'invalid-setup', "Setup banned" if ms.banned
@@ -81,8 +84,8 @@ Meteor.methods
 			msgs: 0
 			u: u
 			gs: "signups"
-			setup: ms._id
-			size: size
+			sid: ms._id
+			size: ms.size
 
 		RocketChat.callbacks.run 'beforeCreateChannel', user, room
 
@@ -97,11 +100,12 @@ Meteor.methods
 			unread: 0
 			u: u
 
-		if username is user.username
-			sub.ls = now
-			sub.open = true
+		sub.ls = now
+		sub.open = true
 
 		ChatSubscription.insert sub
+		
+		Meteor.users.update Meteor.userId(), {$set: g: rid}
 
 		Meteor.defer ->
 

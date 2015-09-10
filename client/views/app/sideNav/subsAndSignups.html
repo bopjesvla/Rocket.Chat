@@ -1,0 +1,10 @@
+<template name="subsAndSignups">
+	{{> signups }}
+	{{> starredRooms }}
+	{{> channels }}
+	{{> directMessages }}
+	{{> privateGroups }}
+	<h3>
+		<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
+	</h3>
+</template>
